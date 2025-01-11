@@ -1,0 +1,18 @@
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="searchanise_queue" engine="innodb" comment="Searchanise queue">
+        <column xsi:type="int" name="queue_id" unsigned="true" nullable="false" identity="true" comment="QueueId" />
+        <column xsi:type="text" name="data" nullable="true" comment="Queue data" />
+        <column xsi:type="varchar" name="action" nullable="false" length="32" default="" comment="Action" />
+        <column xsi:type="int" name="store_id" nullable="false" unsigned="true" default="0" comment="StoreId Id" />
+        <column xsi:type="int" name="started" nullable="false" default="0" comment="Started flag" />
+        <column xsi:type="int" name="error_count" nullable="false" default="0" comment="Error count" />
+        <column xsi:type="varchar" name="status" nullable="false" length="32" default="pending" comment="Current status" />
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="queue_id"/>
+        </constraint>
+        <index referenceId="status" indexType="btree">
+            <column name="status"/>
+        </index>
+    </table>
+</schema>

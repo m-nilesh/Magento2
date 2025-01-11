@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<items>
+  <item>
+    <sku>1000000000100</sku>
+    <store_view_code></store_view_code>
+    <attribute_set_code>Default</attribute_set_code>
+    <product_type>simple</product_type>
+    <product_websites>base</product_websites>
+    <name><![CDATA[ARUKU SHAD 60 BLUE SHINER]]></name>
+    <description></description>
+    <short_description></short_description>
+    <product_online>1</product_online>
+    <visibility>Not Visible Individually</visibility>
+    <price>4.98</price>
+    <adv_sellp_euro>9.95</adv_sellp_euro>
+    <url_key><![CDATA[aruku-shad-60-blue-shiner-000001000000000100]]></url_key>
+    <qty>99999</qty>
+    <is_in_stock>1</is_in_stock>
+    <origcode>1-0-1</origcode>
+    <model>U-SAS60BSR</model>
+    <lengte>6cm</lengte>
+    <transplengte></transplengte>
+    <gewicht>10g</gewicht>
+    <afmetingen></afmetingen>
+    <werpgewicht></werpgewicht>
+    <delen></delen>
+    <aantal_ogen></aantal_ogen>
+    <aanbevolen_elastiekdia></aanbevolen_elastiekdia>
+    <color>Blue Shiner</color>
+    <diammm></diammm>
+    <haakmaat></haakmaat>
+    <inhoud></inhoud>
+    <kogell></kogell>
+    <lijn></lijn>
+    <maat></maat>
+    <mandmm></mandmm>
+    <oneve>1 X 1</oneve>
+    <ratio></ratio>
+    <trekkracht></trekkracht>
+    <tips></tips>
+    <cm_rotatie></cm_rotatie>
+    <qty_increments>1</qty_increments>
+  </item>
+  <item>
+    <sku>E-NNGADJ-BKIB</sku>
+    <store_view_code></store_view_code>
+    <attribute_set_code>Default</attribute_set_code>
+    <product_type>grouped</product_type>
+    <categories>911</categories>
+    <categories_position>911=10</categories_position>
+    <product_websites>base</product_websites>
+    <name><![CDATA[Aurora Down Jacket Indigo Blue]]></name>
+    <description>&lt;p&gt;Deze jas is uitgevoerd met 5 zakken. SPRO begrijpt hoe belangrijk het is voor hengelsporters om extra zakken te hebben om voldoende materiaal mee te kunnen nemen voor een sessie. Het perfecte donsjack voor vrije tijd maar ook zeker voor alledaags gebruik.&lt;br /&gt;&lt;br /&gt;- NANGA x SPRO&lt;br /&gt;- Unisex&lt;br /&gt;- Medium lengte&lt;br /&gt;- 4 buitenzakken (3 aan de voorkant en 1 aan de achterkant)&lt;br /&gt;- 1 binnenzak&lt;br /&gt;- AURORA-TEX&amp;reg;&lt;br /&gt;- Premium Down x Kawada Feather&lt;br /&gt;- Made in Japan&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;OVER NANGA&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Opgericht in 1994 als onderdeel van een Japans hengelsportbedrijf &quot;Gamakatsu&quot;. Hoewel SPRO een van de toonaangevende bedrijven in de branche blijft, is dit de eerste modellijn die SPRO ooit heeft gelanceerd, met als doel een klassieke, op de buitenlucht ge&amp;iuml;nspireerde collectie te brengen door gebruik te maken van hoogwaardig en uniek materiaal dat het stereotype van vissers zal veranderen.&lt;/p&gt;</description>
+    <short_description>Aurora Down Jacket Indigo Blue</short_description>
+    <product_online>1</product_online>
+    <visibility>Catalog</visibility>
+    <url_key><![CDATA[aurora-down-jacket-indigo-blue-e-nngadj-bkib]]></url_key>
+    <meta_title></meta_title>
+    <meta_keywords></meta_keywords>
+    <meta_description></meta_description>
+    <base_image>/E-NNGADJ-BKIB_10.jpg</base_image>
+    <base_image_label>Nanga Aurora Down Jacket</base_image_label>
+    <small_image>/E-NNGADJ-BKIB_10.jpg</small_image>
+    <thumbnail_image>/E-NNGADJ-BKIB_10.jpg</thumbnail_image>
+    <additional_images>/E-NNGADJ-BKIB_20.jpg|/E-NNGADJ-BKIB_30.jpg|/E-NNGADJ-BKIB_40.jpg|/E-NNGADJ-BKIB_50.jpg|/E-NNGADJ-BKIB_60.jpg</additional_images>
+    <additional_image_labels>Chest Pocket|Backside|Inner Pocket|Adjustable Waist|Backside Pocket</additional_image_labels>
+    <associated_skus>1000000000100</associated_skus>
+    <show_suggested_retail_price>Yes</show_suggested_retail_price>
+  </item>
+  </items>

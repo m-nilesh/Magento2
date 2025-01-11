@@ -1,0 +1,30 @@
+{
+    "name": "wapone/module-trovaprezzi-trustedprogram",
+    "description": "TrovaPrezzi tracking module for Magento 2",
+    "type": "magento2-module",
+    "require": {
+        "php": "~7.4|^8.0",
+        "magento/framework": "*"
+    },
+    "version": "1.1.0",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],
+    "authors": [
+        {
+            "name": "WaPoNe",
+            "email": "michele@fantetti.net",
+            "homepage": "https://www.fantetti.net",
+            "role": "Technical Support"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Trovaprezzi\\TrustedProgram\\": ""
+        }
+    }
+}

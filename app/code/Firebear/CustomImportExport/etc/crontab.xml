@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="set_products_visibility" instance="Firebear\CustomImportExport\Cron\UpdateProductVisibility" method="execute">
+            <schedule>35 07 * * *</schedule>
+        </job>
+    </group>
+</config>

@@ -1,0 +1,262 @@
+definitions:
+  services:
+    elasticsearch:
+      image:
+        name: tltroll/ci-elasticsearch:7.13.1
+    mysql:
+      image: mysql:5.7
+      variables:
+        MYSQL_DATABASE: magento
+        MYSQL_ROOT_PASSWORD: tmp
+    mysql-int:
+      image: mysql:5.7
+      variables:
+        MYSQL_DATABASE: magento_integration_tests
+        MYSQL_ROOT_PASSWORD: 123123q
+    rabbitmq:
+      image: rabbitmq
+  steps:
+    - step:
+        name: static-env
+        image: alpine
+        script: &deploy-script
+          - apk add bash gettext curl openssl git
+          - VERSION=`echo ${magento_version} | tr "." "-"`
+          - VERSION_PHP=`echo ${php_version} | tr "." "-"`
+          - if [ "$SUB_DOMAIN" = "" ]; then SUB_DOMAIN="$(curl -s https://random-word-api.herokuapp.com/word | sed 's/\[//g; s/\]//g; s/\"//g')-${VERSION}-${magento_edition}-php${VERSION_PHP}"; fi
+          - curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+          - chmod +x ./kubectl
+          - mv ./kubectl /usr/local/bin/kubectl
+          - curl -sL https://github.com/digitalocean/doctl/releases/download/v1.54.0/doctl-1.54.0-linux-amd64.tar.gz | tar -xzv
+          - mv ./doctl /usr/local/bin
+          - doctl auth init -t $DO_TOKEN
+          - doctl kubernetes cluster kubeconfig save firebear
+          - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+          - chmod 700 get_helm.sh
+          - ./get_helm.sh
+          - kubectl delete ns ${SUB_DOMAIN} --ignore-not-found=true
+          - git clone https://${USER_REPO}:${TOKEN_REPO}@bitbucket.org/firebeardev/magento2-infrastructure.git infra;
+          - cd infra/charts/magento
+          - envsubst < Chart.tmpl > Chart.yaml
+          - helm dependency update .
+          - kubectl create ns ${SUB_DOMAIN}
+          - if [ "$TTL" != "" ]; then
+              kubectl annotate ns ${SUB_DOMAIN} janitor/ttl=${TTL};
+            fi
+          - export target_version_opensearch=2.4.6
+          - if [[ "$(printf '%s\n' "$target_version_opensearch" "$magento_version" | sort -V | head -n1)" == "$target_version_opensearch" ]]; then export search=opensearch; export opensearch=true; export elasticsearch=false; else export search=elasticsearch; export elastisearch=true; export opensearch=false; fi
+          - >
+            helm upgrade magento . --install -n ${SUB_DOMAIN}
+            --set "ingress.hosts[0].host=${SUB_DOMAIN}.ds1.firebearstudio.com"
+            --set env.DB_PASS=${DB_PASS}
+            --set env.MAGENTO_AUTH_LOGIN=${MAGENTO_AUTH_LOGIN}
+            --set env.MAGENTO_AUTH_PASS=${MAGENTO_AUTH_PASS}
+            --set env.MAGENTO_VERSION=${magento_version}
+            --set env.MAGENTO_EDITION=${magento_edition}
+            --set env.MAGENTO_SAMPLE_DATA=${magento_sample_data}
+            --set env.COMPOSER_USER=${COMPOSER_USER}
+            --set env.COMPOSER_PASS=${COMPOSER_PASS}
+            --set env.USER_REPO=${USER_REPO}
+            --set env.TOKEN_REPO=${TOKEN_REPO}
+            --set env.TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+            --set env.BITBUCKET_BRANCH=${BITBUCKET_BRANCH}
+            --set env.BITBUCKET_COMMIT=${BITBUCKET_COMMIT}
+            --set env.SEARCH=${search}
+            --set image.tag=${php_version}
+            --set persistence.enabled=${magento_persistence}
+            --set mariadb.persistence.enabled=${magento_persistence}
+            --set elasticsearch.enabled=${elasticsearch}
+            --set opensearch.enabled=${opensearch}
+
+pipelines:
+  pull-requests:
+    '**':
+      - parallel:
+#          - step:
+#              name: Check codestyle
+#              image: extdn/magento-coding-standard-action
+#              script:
+#                - /root/.composer/vendor/bin/phpcs -p --severity=1 --standard=dev/codesniffer/ruleset.xml ./
+#                - /root/.composer/vendor/bin/phpcs -p --severity=1 --standard=dev/codesniffer/ruleset_addon.xml ./
+          - step:
+              name: Marketplace EQP Code Sniffer
+              image:
+                name: registry.digitalocean.com/firebear-instances/php:8.1-fpm
+                username: $DOREGUSERNAME
+                password: $DOREGPASS
+              caches:
+                - composer
+              script:
+                - git clone https://github.com/magento/magento-coding-standard.git
+                - cd magento-coding-standard
+                - composer install
+                - vendor/bin/phpcs -i
+                - vendor/bin/phpcs --standard=Magento2 --ignore=magento-coding-standard --extensions=php,phtml --error-severity=9 --severity=9 --ignore-annotations ../
+          - step:
+              size: 2x
+              name: setup:di:compile 2.4.6
+              image:
+                name: registry.digitalocean.com/firebear-instances/php:8.1-fpm
+                username: $DOREGUSERNAME
+                password: $DOREGPASS
+              caches:
+                - composer
+              services:
+                - mysql
+                - elasticsearch
+              script:
+                - M_VERSION=2.4.6
+                - if grep -q 'magento enterprise edition' ${BITBUCKET_CLONE_DIR}/composer.json; then EDITION=enterprise; else EDITION=community; fi
+                - echo $BP
+                - composer config -g http-basic.repo.magento.com $MAGENTO_AUTH_LOGIN $MAGENTO_AUTH_PASS
+                - composer create-project --repository-url=https://repo.magento.com/ magento/project-${EDITION}-edition=${M_VERSION} /app
+                - cd /app
+                #- cp -rf ./composer.phar /usr/local/bin/composer
+                - composer config repositories.firebear path ${BITBUCKET_CLONE_DIR}
+                - composer config --unset repositories.0
+                - composer config repositories.0 "${repo}"
+                - composer config minimum-stability dev
+                - COMPOSER_MIRROR_PATH_REPOS=1 COMPOSER_MEMORY_LIMIT=-1 composer require "firebear/importexport:*"
+                - curl -s https://raw.githubusercontent.com/firebearstudio/pipeline-scripts/master/phpstan.neon -o /tmp/phpstan.neon
+                - bin/magento setup:install
+                  "--search-engine" "elasticsearch7"
+                  "--admin-firstname" "admin"
+                  "--admin-lastname" "admin"
+                  "--admin-email" "admin@example.com"
+                  "--admin-user" "admin"
+                  "--admin-password" "waq7MPmYBSkwkgXt"
+                  "--elasticsearch-host" "127.0.0.1"
+                  "--elasticsearch-port" "9200"
+                  "--no-interaction"
+                  "--db-host" "127.0.0.1:3306"
+                  "--db-name" "magento"
+                  "--db-user" "root"
+                  "--db-password" "tmp"
+                - bin/magento module:enable --all
+                - bin/magento setup:upgrade
+                - bin/magento deploy:mode:set production
+#                - vendor/bin/phpstan analyse --no-progress -c /tmp/phpstan.neon vendor/firebear/importexport
+#          - step:
+#              size: 2x
+#              name: dicompile&phpstan m2.4.6
+#              image:
+#                name: registry.digitalocean.com/firebear-instances/php:8.1-fpm
+#                username: $DOREGUSERNAME
+#                password: $DOREGPASS
+#              services:
+#                - mysql
+#                - elasticsearch
+#              script:
+#                - M_VERSION=2.4.6
+#                - if grep -q 'magento enterprise edition' ${BITBUCKET_CLONE_DIR}/composer.json; then EDITION=ee; else EDITION=ce; fi
+#                - mc cp bear/firebear-ci/magento/${M_VERSION}-${EDITION}.tar.gz /tmp/
+#                - tar -xf /tmp/${M_VERSION}-${EDITION}.tar.gz; mv ${M_VERSION}-${EDITION} /app
+#                - cd /app
+#                #- cp -rf ./composer.phar /usr/local/bin/composer
+#                - composer config repositories.firebear path ${BITBUCKET_CLONE_DIR}
+#                - composer config --unset repositories.0
+#                - composer config repositories.0 "${repo}"
+#                - composer config minimum-stability dev
+#                - composer config -g http-basic.repo.magento.com $MAGENTO_AUTH_LOGIN $MAGENTO_AUTH_PASS
+#                - COMPOSER_MIRROR_PATH_REPOS=1 COMPOSER_MEMORY_LIMIT=-1 composer require "firebear/importexport:*"
+#                - curl -s https://raw.githubusercontent.com/firebearstudio/pipeline-scripts/master/phpstan.neon -o /tmp/phpstan.neon
+#                - bin/magento setup:install
+#                  "--search-engine" "elasticsearch7"
+#                  "--admin-firstname" "admin"
+#                  "--admin-lastname" "admin"
+#                  "--admin-email" "admin@example.com"
+#                  "--admin-user" "admin"
+#                  "--admin-password" "waq7MPmYBSkwkgXt"
+#                  "--elasticsearch-host" "127.0.0.1"
+#                  "--elasticsearch-port" "9200"
+#                  "--no-interaction"
+#                  "--db-host" "127.0.0.1:3306"
+#                  "--db-name" "magento"
+#                  "--db-user" "root"
+#                  "--db-password" "tmp"
+#                - bin/magento module:enable --all
+#                - bin/magento module:disable "Magento_TwoFactorAuth"
+#                - bin/magento setup:di:compile
+#                - bin/magento setup:upgrade --keep-generated
+#                - vendor/bin/phpstan analyse --no-progress -c /tmp/phpstan.neon vendor/firebear/importexport
+#          - step:
+#              size: 2x
+#              name: integrations test m2.4.6
+#              image:
+#                name: registry.digitalocean.com/firebear-instances/php:8.1-fpm
+#                username: $DOREGUSERNAME
+#                password: $DOREGPASS
+#              services:
+#                - mysql-int
+#                - elasticsearch
+#                - rabbitmq
+#              script:
+#                - M_VERSION=2.4.6
+#                - if grep -q 'magento enterprise edition' ${BITBUCKET_CLONE_DIR}/composer.json; then EDITION=ee; else EDITION=ce; fi
+#                - mc cp bear/firebear-ci/magento/${M_VERSION}-${EDITION}.tar.gz /tmp/
+#                - tar -xf /tmp/${M_VERSION}-${EDITION}.tar.gz; mv ${M_VERSION}-${EDITION} /app
+#                - cd /app
+#                #- cp -rf ./composer.phar /usr/local/bin/composer
+#                - composer config repositories.firebear path ${BITBUCKET_CLONE_DIR}
+#                - composer config --unset repositories.0
+#                - composer config repositories.0 "${repo}"
+#                - composer config minimum-stability dev
+#                - composer config -g http-basic.repo.magento.com $MAGENTO_AUTH_LOGIN $MAGENTO_AUTH_PASS
+#                - COMPOSER_MIRROR_PATH_REPOS=1 COMPOSER_MEMORY_LIMIT=-1 composer require "firebear/importexport:*"
+#                - cd dev/tests/integration
+#                - cp -rf phpunit.xml.dist phpunit.xml
+#                - cp -rf etc/install-config-mysql.php.dist etc/install-config-mysql.php
+#                - sed -i 's/localhost/127.0.0.1/g' etc/install-config-mysql.php
+#                - sed -i "s#../../../app/code/\*/\*/Test/Integration#../../../vendor/firebear/importexport/Test/Integration#g" phpunit.xml
+#                - sed -i '/<directory>testsuite<\/directory>/d' phpunit.xml
+#                - ../../../vendor/bin/phpunit --testsuite "Magento Integration Tests Real Suite" --log-junit ${BITBUCKET_CLONE_DIR}/test-reports/junit.xml
+  custom:
+    manual_run_deploy: #name of this pipeline
+      - variables:          #list variable names under here
+          - name: magento_version
+            default: "2.4.5"
+          - name: magento_edition
+            default: "ce"
+          - name: php_version
+            default: "8.1"
+          - name: magento_sample_data
+            default: "false"
+          - name: magento_persistence
+            default: "false"
+          - name: TTL
+            default: "1d"
+          - name: SUB_DOMAIN
+      - step:
+#          services:
+#            - docker
+          name: deploy
+          image: alpine
+#          runs-on:
+#            - 'deploy'
+          script: *deploy-script
+
+  branches:
+    develop:
+      - step:
+          name: deploy develop-ce
+          image: alpine
+          deployment: develop-ce
+          script: *deploy-script
+    ee-develop:
+      - step:
+          name: deploy develop-ee
+          image: alpine
+          deployment: develop-ee
+          script: *deploy-script
+    release/*:
+      - step:
+          name: deploy release-ce
+          image: alpine
+          deployment: release-ce
+          script: *deploy-script
+    ee-release/*:
+      - step:
+          name: deploy release-ee
+          image: alpine
+          deployment: release-ee
+          script: *deploy-script

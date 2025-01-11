@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<items>
+    <item>
+      <entity_id>911</entity_id>      
+      <name><![CDATA[Default Category/SPRO]]></name>
+      <store_view>dutch</store_view>
+      <url_key><![CDATA[spro]]></url_key>
+      <image>cat_911.jpg</image>
+      <position>00001</position>
+      <include_in_menu>1</include_in_menu>
+      <is_active>1</is_active>
+      <active_m1>1</active_m1>
+    </item>
+    <item>
+      <entity_id>911</entity_id>      
+      <name><![CDATA[Default Category/SPRO]]></name>
+      <store_view>english</store_view>
+      <url_key><![CDATA[spro]]></url_key>
+      <image>cat_911.jpg</image>
+      <position>00001</position>
+      <include_in_menu>1</include_in_menu>
+      <is_active>1</is_active>
+      <active_m1>1</active_m1>
+    </item>
+    <item>
+      <entity_id>911</entity_id>      
+      <name><![CDATA[Default Category/SPRO]]></name>
+      <store_view>german</store_view>
+      <url_key><![CDATA[spro]]></url_key>
+      <image>cat_911.jpg</image>
+      <position>00001</position>
+      <include_in_menu>1</include_in_menu>
+      <is_active>1</is_active>
+      <active_m1>1</active_m1>
+    </item>
+    <item>
+      <entity_id>911</entity_id>      
+      <name><![CDATA[Default Category/SPRO]]></name>
+      <store_view>french</store_view>
+      <url_key><![CDATA[spro]]></url_key>
+      <image>cat_911.jpg</image>
+      <position>00001</position>
+      <include_in_menu>1</include_in_menu>
+      <is_active>1</is_active>
+      <active_m1>1</active_m1>
+    </item>
+    <item>
+      <entity_id>911</entity_id>      
+      <name><![CDATA[Default Category/SPRO]]></name>
+      <store_view>czech</store_view>
+      <url_key><![CDATA[spro]]></url_key>
+      <image>cat_911.jpg</image>
+      <position>00001</position>
+      <include_in_menu>1</include_in_menu>
+      <is_active>1</is_active>
+      <active_m1>1</active_m1>
+    </item>
+    <item>
+      <entity_id>911</entity_id>      
+      <name><![CDATA[Default Category/SPRO]]></name>
+      <store_view>polish</store_view>
+      <url_key><![CDATA[spro]]></url_key>
+      <image>cat_911.jpg</image>
+      <position>00001</position>
+      <include_in_menu>1</include_in_menu>
+      <is_active>1</is_active>
+      <active_m1>1</active_m1>
+    </item>
+    <item>
+      <entity_id>911</entity_id>      
+      <name><![CDATA[Default Category/SPRO]]></name>
+      <store_view>hungarian</store_view>
+      <url_key><![CDATA[spro]]></url_key>
+      <image>cat_911.jpg</image>
+      <position>00001</position>
+      <include_in_menu>1</include_in_menu>
+      <is_active>1</is_active>
+      <active_m1>1</active_m1>
+    </item>
+    <item>
+      <entity_id>911</entity_id>      
+      <name><![CDATA[Default Category/SPRO]]></name>
+      <store_view>italian</store_view>
+      <url_key><![CDATA[spro]]></url_key>
+      <image>cat_911.jpg</image>
+      <position>00001</position>
+      <include_in_menu>1</include_in_menu>
+      <is_active>1</is_active>
+      <active_m1>1</active_m1>
+    </item>
+</items>

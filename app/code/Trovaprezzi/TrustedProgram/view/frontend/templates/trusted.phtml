@@ -1,0 +1,14 @@
+<?php
+
+use Trovaprezzi\TrustedProgram\Block\Trusted;
+
+/** @var $block Trusted */
+?>
+<!-- BEGIN Trovaprezzi Trusted Program CODE -->
+<?= $block->getTrackingJquery() ?>
+<script>
+//<![CDATA
+    <?= $block->getOrdersTrackingCode() ?>
+//]]>
+</script>
+<!-- END  Trovaprezzi Trusted Program CODE -->

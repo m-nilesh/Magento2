@@ -1,0 +1,25 @@
+{
+    "name": "searchanise/search-autocomplete",
+    "description": "Search Autocomplete + Search Suggest",
+    "type": "magento2-module",
+    "version": "1.0.19",
+    "homepage": "http://www.searchanise.com",
+    "authors": [
+        {
+            "name": "Simtech",
+            "email": "sales@searchanise.com"
+        }
+    ],
+    "require": {
+        "php": "~7.1|~7.2|~7.3|~7.4|~8.0|~8.1"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Searchanise\\SearchAutocomplete\\": ""
+        }
+    },
+    "minimum-stability": "stable"
+}
